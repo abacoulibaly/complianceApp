@@ -1,0 +1,4 @@
+AIVisionExtractionService — Sends label images to GPT-4o via ChatClient with structured output mapped to ExtractedLabelData
+ComplianceRuleEngine — Enforces FUZZY and PERFECT rules
+BatchComplianceService — Processes multiple files concurrently on virtual threads with a semaphore-limited queue
+ComplianceProcessingService — Orchestrates extraction + rules with a 5-second SLA timeout

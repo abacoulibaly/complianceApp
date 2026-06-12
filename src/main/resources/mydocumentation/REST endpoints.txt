@@ -1,0 +1,8 @@
+
+Method	Path	Description
+POST
+/api/v1/compliance/verify
+Single image upload
+POST
+/api/v1/compliance/verify/batch
+Multiple images (concurrent queue)

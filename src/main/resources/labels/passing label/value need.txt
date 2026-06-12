@@ -1,0 +1,4 @@
+  -F "image=@samples/sample-label.png;type=image/png" `
+  -F "brandName=Stone's Throw" `
+  -F "alcoholPercentage=12.5" `
+  -F "productType=Wine"

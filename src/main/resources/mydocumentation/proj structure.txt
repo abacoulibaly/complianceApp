@@ -1,0 +1,9 @@
+compliance-automation/
+├── pom.xml
+└── src/main/java/com/threasury/compliance/
+    ├── ComplianceApplication.java
+    ├── config/          (Virtual threads, AI, properties)
+    ├── controller/      (REST multipart endpoints)
+    ├── dto/             (Java 21 records)
+    ├── exception/       (Timeout + global handler)
+    └── service/         (Vision AI, rules, batch queue)
