@@ -19,7 +19,7 @@ $jar = Join-Path $root "target\compliance-automation-1.0.0-SNAPSHOT.jar"
 if (-not (Test-Path $jar)) {
     Write-Host "Building application..."
     Push-Location $root
-    mvn -q -DskipTests package
+    mvn -q -DskipTests package 
     Pop-Location
 }
 
