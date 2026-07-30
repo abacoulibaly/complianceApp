@@ -8,7 +8,7 @@ COPY src ./src
 RUN mvn -q -B package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine
-WORKDIR /app
+WORKDIR /app 
 
 RUN addgroup -S compliance && adduser -S compliance -G compliance \
     && apk add --no-cache curl
