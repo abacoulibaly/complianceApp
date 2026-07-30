@@ -15,3 +15,4 @@ This app helps government compliance agents verify alcohol bottle labels automat
 9.	Configuration reference
 
 .....
+adding this to main 
