@@ -1,9 +1,12 @@
 name: Enforce Commit Message Format
 
 on:
-  push:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+      - develop
 
 jobs:
   validate-commit:
@@ -14,37 +17,36 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check commit message pattern
+      - name: Validate Commit Messages
         run: |
-          # Regex matches "CM-" followed by exactly 5 digits (e.g., CM-12345)
-          PATTERN="CM-[0-9]{5}"
+          PATTERN="CM-[0-9]+"
+          FAILED=0
 
-          # Get commits depending on event type
+          # Determine commit range depending on trigger
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"
             HEAD_SHA="${{ github.event.pull_request.head.sha }}"
             COMMITS=$(git log --format="%H %s" $BASE_SHA..$HEAD_SHA)
           else
-            # For direct pushes, check the latest commit
             COMMITS=$(git log -1 --format="%H %s")
           fi
 
-          FAILED=0
-          echo "$COMMITS" | while read -r line; do
+          # Process substitution avoids subshell variable loss
+          while read -r line; do
             if [ -n "$line" ]; then
               HASH=$(echo "$line" | awk '{print $1}')
               MSG=$(echo "$line" | cut -d' ' -f2-)
-              
+
               if ! echo "$MSG" | grep -qE "$PATTERN"; then
-                echo "*** Error: Commit $HASH does not match pattern  For ECM Jira 'CM-xxxxx'"
-                echo "   Message was: \"$MSG\""
+                echo "::error::Commit $HASH does not match 'CM-xxxxx'. Message: \"$MSG\""
                 FAILED=1
               else
-                echo "**** Passed: $HASH"
+                echo "✅ Passed: $HASH"
               fi
             fi
-          done
+          done < <(echo "$COMMITS")
 
           if [ $FAILED -eq 1 ]; then
+            echo "❌ Validation failed! One or more commit messages are invalid."
             exit 1
           fi
