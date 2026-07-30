@@ -1,0 +1,52 @@
+name: Enforce Commit Message Format
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  validate-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate Commit Messages
+        run: |
+          PATTERN="CM-[0-9]+"
+          FAILED=0
+
+          # Determine commit range depending on trigger
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            COMMITS=$(git log --format="%H %s" $BASE_SHA..$HEAD_SHA)
+          else
+            COMMITS=$(git log -1 --format="%H %s")
+          fi
+
+          # Process substitution avoids subshell variable loss
+          while read -r line; do
+            if [ -n "$line" ]; then
+              HASH=$(echo "$line" | awk '{print $1}')
+              MSG=$(echo "$line" | cut -d' ' -f2-)
+
+              if ! echo "$MSG" | grep -qE "$PATTERN"; then
+                echo "::error::Commit $HASH does not match 'CM-xxxxx'. Message: \"$MSG\""
+                FAILED=1
+              else
+                echo " **V ** Passed: $HASH"
+              fi
+            fi
+          done < <(echo "$COMMITS")
+
+          if [ $FAILED -eq 1 ]; then
+            echo "***FAIL *** Validation failed! One or more commit messages are invalid."
+            exit 1
+          fi
