@@ -1,0 +1,50 @@
+name: Enforce Commit Message Format
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit message pattern
+        run: |
+          # Regex matches "CM-" followed by exactly 5 digits (e.g., CM-12345)
+          PATTERN="CM-[0-9]{5}"
+
+          # Get commits depending on event type
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            COMMITS=$(git log --format="%H %s" $BASE_SHA..$HEAD_SHA)
+          else
+            # For direct pushes, check the latest commit
+            COMMITS=$(git log -1 --format="%H %s")
+          fi
+
+          FAILED=0
+          echo "$COMMITS" | while read -r line; do
+            if [ -n "$line" ]; then
+              HASH=$(echo "$line" | awk '{print $1}')
+              MSG=$(echo "$line" | cut -d' ' -f2-)
+              
+              if ! echo "$MSG" | grep -qE "$PATTERN"; then
+                echo "*** Error: Commit $HASH does not match pattern  For ECM Jira 'CM-xxxxx'"
+                echo "   Message was: \"$MSG\""
+                FAILED=1
+              else
+                echo "**** Passed: $HASH"
+              fi
+            fi
+          done
+
+          if [ $FAILED -eq 1 ]; then
+            exit 1
+          fi
