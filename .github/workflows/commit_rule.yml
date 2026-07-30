@@ -1,0 +1,30 @@
+name: Validate Commit Messages
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-commit-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate Commit Pattern
+        run: |
+          # Regex pattern to match CM- followed by 5 digits (e.g., CM-12345)
+          PATTERN="CM-[0-9]{5}"
+
+          for commit in $(git rev-list HEAD ^origin/${{ github.base_ref || 'main' }}); do
+            msg=$(git log --format=%B -n 1 $commit)
+            if ! echo "$msg" | grep -qE "$PATTERN"; then
+              echo "Error: Commit $commit message does not contain 'CM-xxxxx'."
+              echo "Commit message: $msg"
+              exit 1
+            fi
+          done
+          echo "All commits contain the required 'CM-xxxxx' pattern."
