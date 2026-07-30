@@ -22,7 +22,7 @@ jobs:
           for commit in $(git rev-list HEAD ^origin/${{ github.base_ref || 'main' }}); do
             msg=$(git log --format=%B -n 1 $commit)
             if ! echo "$msg" | grep -qE "$PATTERN"; then
-              echo "Error: Commit $commit message does not contain 'CM-xxxxx'."
+              echo "Error: Commit $commit msg  does --> NOT contain  the require JIRA ref 'CM-xxxxx'."
               echo "Commit message: $msg"
               exit 1
             fi
