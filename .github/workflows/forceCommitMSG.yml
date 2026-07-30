@@ -41,12 +41,12 @@ jobs:
                 echo "::error::Commit $HASH does not match 'CM-xxxxx'. Message: \"$MSG\""
                 FAILED=1
               else
-                echo "✅ Passed: $HASH"
+                echo " **V ** Passed: $HASH"
               fi
             fi
           done < <(echo "$COMMITS")
 
           if [ $FAILED -eq 1 ]; then
-            echo "❌ Validation failed! One or more commit messages are invalid."
+            echo "***FAIL *** Validation failed! One or more commit messages are invalid."
             exit 1
           fi
