@@ -6,7 +6,7 @@ on:
 
 jobs:
   validate-pr-details:
-    runs-on: self-hosted
+    runs-on: [ubuntu-latest,self-hosted]
     permissions:
       pull-requests: write
     steps:
@@ -19,14 +19,21 @@ jobs:
         run: |
           PATTERN="CM-[0-9]+"
 
-          # Check if either title OR description contains CM-xxxxx
-          if echo "$PR_TITLE $PR_BODY" | grep -qE "$PATTERN"; then
+          # Combine title and body into a single safe variable check
+          COMBINED_TEXT="${PR_TITLE} ${PR_BODY}"
+
+          echo "Checking PR Title: ${PR_TITLE}"
+
+          # -i makes pattern case-insensitive (matches CM-123, cm-123)
+          # -q keeps output quiet
+          # -E enables extended regex
+          if echo "$COMBINED_TEXT" | grep -iqE "$PATTERN"; then
             echo " Valid ticket pattern found in PR details."
           else
             echo " Missing ticket pattern 'CM-xxxxx' in PR title or body."
 
-            # Post a comment to the PR alerting the author
-            gh pr comment $PR_NUMBER --body " **PR Validation Failed:** Your PR title or body must include a valid ticket ID matching \`CM-xxxxx\` (e.g., \`CM-12345\`). Please update the PR title/description to unblock merging."
+            # Post comment to the PR
+            gh pr comment $PR_NUMBER --body " **PR Validation Failed:** Your PR title or body must include a valid ticket ID matching \`CM-xxxxx\` (e.g., \`CM-12345\`). Please update the PR title or description to unblock merging."
 
             exit 1
           fi
