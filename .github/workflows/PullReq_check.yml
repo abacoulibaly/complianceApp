@@ -35,5 +35,5 @@ jobs:
             # Post comment to the PR
             gh pr comment $PR_NUMBER --body " **PR Validation Failed:** Your PR title or body must include a valid ticket ID matching \`CM-xxxxx\` (e.g., \`CM-12345\`). Please update the PR title or description to unblock merging."
 
-            exit 1
+            exit 1 
           fi
