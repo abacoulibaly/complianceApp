@@ -13,4 +13,6 @@ This app helps government compliance agents verify alcohol bottle labels automat
 7.	Build, JAR, and Docker deployment
 8.	API endpoint table
 9.	Configuration reference
-*******************
+
+
+
