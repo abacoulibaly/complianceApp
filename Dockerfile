@@ -1,5 +1,5 @@
 FROM maven:3.9-eclipse-temurin-21-alpine AS build
-WORKDIR /app 
+WORKDIR /app
 
 COPY pom.xml .
 RUN mvn -q -B dependency:go-offline -DskipTests
