@@ -17,7 +17,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PATTERN="CM-[0-9]+"
+          PATTERN="[cC][mM]-[0-9]+"
 
           # Combine title and body into a single safe variable check
           COMBINED_TEXT="${PR_TITLE} ${PR_BODY}"
