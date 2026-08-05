@@ -17,7 +17,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PATTERN="CM-[0-9]+"
+          PATTERN="[cC][mM]-[0-9]+"
 
           # Check if either title OR description contains CM-xxxxx
           if echo "$PR_TITLE $PR_BODY" | grep -qE "$PATTERN"; then
